@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: PCM-Encoder
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - name: PCM-Encoder
+          image: PCM-Encoder:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /app/data
+              name: music-categorizer-pvc
+      volumes:
+        - name: music-categorizer-pvc
+          persistentVolumeClaim:
+            claimName: music-categorizer-pvc
+      restartPolicy: Never
