@@ -1,5 +1,5 @@
 
-cd init_k8s
+cd init_deploy
 kubectl apply -f PV.yaml
 kubectl apply -f PVC.yaml
 cd ..
