@@ -4,5 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-CMD ["sh", "start.sh"]
+RUN chmod +x create_pcm.sh
+
+CMD ["sh", "create_pcm.sh"]
 

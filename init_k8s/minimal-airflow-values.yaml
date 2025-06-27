@@ -1,0 +1,56 @@
+executor: CeleryExecutor
+
+webserver:
+  enabled: true
+  service:
+    type: ClusterIP
+  defaultUser:
+    enabled: true
+    username: admin
+    password: admin
+    role: Admin
+    email: admin@example.com
+
+worker:
+  enabled: true
+
+api:
+  enabled: false
+triggerer:
+  enabled: false
+flower:
+  enabled: false
+statsd:
+  enabled: false
+dagProcessor:
+  enabled: false
+
+redis:
+  enabled: true
+
+postgresql:
+  enabled: true
+  auth:
+    username: airflow
+    password: airflow
+    database: airflow
+
+airflow:
+  users:
+    - username: admin
+      password: admin
+      role: Admin
+      email: admin@example.com
+  fernetKey: ""
+  secretKey: ""
+  loadExamples: false
+
+dags:
+  persistence:
+    enabled: true
+    existingClaim: music-categorizer-pvc
+    subPath: dags
+
+logs:
+  persistence:
+    enabled: false
