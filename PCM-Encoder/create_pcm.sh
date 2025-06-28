@@ -4,7 +4,6 @@ set -euo pipefail
 echo "Starting PCM-Encoder pod"
 
 pcm_directory="/music-categorizer-data/pcm_encoding"
-# Ensure output directory exists
 mkdir -p "$pcm_directory"
 
 for file in /app/audio/*; do
