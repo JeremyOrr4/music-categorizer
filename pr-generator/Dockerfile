@@ -9,6 +9,6 @@ RUN apt-get update && apt-get install -y \
 
 COPY . .  
 
-RUN gcc -o pr-generator pr-generator.c -lfftw3
+RUN gcc -o pr-generator pr-generator.c -lfftw3 -lm
 
 CMD ["./pr-generator"]
