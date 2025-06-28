@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pr-generator
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - name: pr-generator
+          image: pr-generator:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /music-categorizer-data
+              name: music-categorizer-pvc
+      volumes:
+        - name: music-categorizer-pvc
+          persistentVolumeClaim:
+            claimName: music-categorizer-pvc
+      restartPolicy: Never
