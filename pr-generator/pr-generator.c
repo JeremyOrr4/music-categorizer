@@ -5,46 +5,62 @@
 #include <fftw3.h>
 #include <math.h>
 
-#define N 1024
+#define N 1024          // FFT window size
+#define MAX_WINDOWS 10000  // Adjust as needed
 
 int ends_with_raw(const char *filename) {
     size_t len = strlen(filename);
     return len >= 4 && strcmp(filename + len - 4, ".raw") == 0;
 }
 
-void fourier_transform(const char *filepath, const void *buffer, size_t size) {
-    double in[N];
-    fftw_complex out[N/2 + 1];
+void fourier_transform_windows(const char *filepath, const short *samples, int num_samples) {
+    fftw_complex out[N / 2 + 1];
     fftw_plan plan;
+    double in[N];
 
-    const short *samples = (const short *)buffer;
-    int num_samples = size / sizeof(short);
+    int num_windows = num_samples / N;
+    if (num_windows > MAX_WINDOWS) num_windows = MAX_WINDOWS;
 
-    // Fill input with up to N samples, zero-pad if needed
-    for (int i = 0; i < N; i++) {
-        if (i < num_samples) {
-            in[i] = (double)samples[i] / 32768.0; // normalize to [-1, 1]
-        } else {
-            in[i] = 0.0;
-        }
+    // Allocate matrix for magnitude values: [time][frequency]
+    double **matrix = malloc(num_windows * sizeof(double *));
+    for (int t = 0; t < num_windows; t++) {
+        matrix[t] = malloc((N / 2 + 1) * sizeof(double));
     }
 
     plan = fftw_plan_dft_r2c_1d(N, in, out, FFTW_ESTIMATE);
-    fftw_execute(plan);
+
+    for (int t = 0; t < num_windows; t++) {
+        int offset = t * N;
+        for (int i = 0; i < N; i++) {
+            in[i] = (double)samples[offset + i] / 32768.0;
+        }
+
+        fftw_execute(plan);
+
+        for (int f = 0; f <= N / 2; f++) {
+            matrix[t][f] = sqrt(out[f][0] * out[f][0] + out[f][1] * out[f][1]);
+        }
+    }
 
     printf("File: %s\n", filepath);
-    for (int i = 0; i <= N/2; i++) {
-        double mag = sqrt(out[i][0]*out[i][0] + out[i][1]*out[i][1]);
-        printf("Bin %d: Magnitude = %f\n", i, mag);
+    for (int t = 0; t < num_windows; t++) {
+        printf("Time Window %d: ", t);
+        for (int f = 0; f <= N / 2; f++) {
+            printf("%.4f ", matrix[t][f]);
+        }
+        printf("\n");
     }
-    printf("\n");
 
+    // Cleanup
+    for (int t = 0; t < num_windows; t++) {
+        free(matrix[t]);
+    }
+    free(matrix);
     fftw_destroy_plan(plan);
 }
 
 int main(int argc, char *argv[]) {
     const char *dir_path = "/music-categorizer-data/pcm_encoder";
-
     DIR *dir = opendir(dir_path);
     if (dir == NULL) {
         perror("opendir failed");
@@ -57,18 +73,26 @@ int main(int argc, char *argv[]) {
             char filepath[1024];
             snprintf(filepath, sizeof(filepath), "%s/%s", dir_path, entry->d_name);
 
-            // Open and read file contents
             FILE *f = fopen(filepath, "rb");
             if (!f) continue;
+
             fseek(f, 0, SEEK_END);
             long size = ftell(f);
             fseek(f, 0, SEEK_SET);
+
+            if (size < N * sizeof(short)) {
+                fclose(f);
+                continue;
+            }
+
             void *buffer = malloc(size);
             if (buffer && size > 0) {
                 fread(buffer, 1, size, f);
-                fourier_transform(filepath, buffer, size);
+                int num_samples = size / sizeof(short);
+                fourier_transform_windows(filepath, (short *)buffer, num_samples);
             }
 
+            free(buffer);
             fclose(f);
         }
     }
