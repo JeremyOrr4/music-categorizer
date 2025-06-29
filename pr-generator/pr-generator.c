@@ -42,14 +42,36 @@ void fourier_transform_windows(const char *filepath, const short *samples, int n
         }
     }
 
-    printf("File: %s\n", filepath);
-    for (int t = 0; t < num_windows; t++) {
-        printf("Time Window %d: ", t);
-        for (int f = 0; f <= N / 2; f++) {
-            printf("%.4f ", matrix[t][f]);
-        }
-        printf("\n");
+    char csv_filename[1024];
+    // Extract base filename from full path
+    const char *base = strrchr(filepath, '/');
+    base = base ? base + 1 : filepath;
+
+    char name_only[256];
+    strncpy(name_only, base, sizeof(name_only));
+    name_only[sizeof(name_only) - 1] = '\0';
+    char *dot = strrchr(name_only, '.');
+    if (dot) *dot = '\0';
+
+    snprintf(csv_filename, sizeof(csv_filename), "pr_%s.csv", name_only);
+
+
+    FILE *csv = fopen(csv_filename, "w");
+    if (!csv) {
+        perror("Failed to open CSV file");
+        return;
     }
+
+    for (int t = 0; t < num_windows; t++) {
+        for (int f = 0; f <= N / 2; f++) {
+            fprintf(csv, "%.5f", matrix[t][f]);
+            if (f < N / 2) fprintf(csv, ",");
+        }
+        fprintf(csv, "\n");
+    }
+
+    fclose(csv);
+    printf("Wrote CSV to: %s\n", csv_filename);
 
     // Cleanup
     for (int t = 0; t < num_windows; t++) {
