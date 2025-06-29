@@ -4,6 +4,8 @@
 #include <string.h>
 #include <fftw3.h>
 #include <math.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 #define N 1024          // FFT window size
 #define MAX_WINDOWS 10000  // Adjust as needed
@@ -53,8 +55,12 @@ void fourier_transform_windows(const char *filepath, const short *samples, int n
     char *dot = strrchr(name_only, '.');
     if (dot) *dot = '\0';
 
-    snprintf(csv_filename, sizeof(csv_filename), "pr_%s.csv", name_only);
+    int status = mkdir("/music-categorizer-data/pr-generator", 0755);
+    if (status == -1 && errno != EEXIST) {
+        perror("mkdir failed");
+    }
 
+    snprintf(csv_filename, sizeof(csv_filename), "/music-categorizer-data/pr-generator/pr_%s.csv", name_only);
 
     FILE *csv = fopen(csv_filename, "w");
     if (!csv) {
