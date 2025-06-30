@@ -6,6 +6,7 @@ RUN_PR=false
 RUN_LR=false
 RUN_MR=false
 RUN_AF=false
+RUN_DGS=false
 
 for arg in "$@"; do
   case $arg in
@@ -15,7 +16,8 @@ for arg in "$@"; do
     --lr)   RUN_LR=true ;;
     --mr)   RUN_MR=true ;;
     --af)   RUN_AF=true ;;
-    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true;;
+    --dgs)  RUN_DGS=true ;;
+    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true; RUN_DGS=true;;
     *) echo "Unknown flag: $arg"; exit 1 ;;
   esac
 done
@@ -54,6 +56,14 @@ if $RUN_MR; then
   cd music-recommender
   kubectl delete job music-recommender  
   docker build -f Dockerfile -t music-recommender:latest .
+  kubectl apply -f k8s/deployment.yaml
+  cd ..
+fi
+
+if $RUN_DGS; then
+  cd init_dags
+  kubectl delete job init-dags  
+  docker build -f Dockerfile -t init-dags:latest .
   kubectl apply -f k8s/deployment.yaml
   cd ..
 fi

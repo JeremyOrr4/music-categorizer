@@ -41,8 +41,8 @@ airflow:
       password: admin
       role: Admin
       email: admin@example.com
-  fernetKey: ""
-  secretKey: ""
+  fernetKey: "dGVzdGZlcm5ldGtleWZvcmFpcmxvdw=="
+  secretKey: "cbbd49606904f71410eb12194bb7eb78"
   loadExamples: false
 
 dags:
