@@ -1,5 +1,3 @@
-# Final version with fixed fft_bins scope and compatibility handling
-
 import numpy as np
 import pandas as pd
 import os
@@ -12,8 +10,6 @@ num_bands = 20
 DEFAULT_FFT_BINS = 513
 sampling_rate = 44100
 nyquist_freq = sampling_rate / 2
-
-# Golden ratio for frequency spacing
 golden_ratio = 1.618
 
 def compute_golden_ratio_edges(num_bands, nyquist_freq, fft_bins):
@@ -42,7 +38,7 @@ def create_and_store_lr(filepath, filename):
 
     num_windows, num_bins = pr_matrix.shape
 
-    fft_bins = DEFAULT_FFT_BINS  # ensure this is always defined
+    fft_bins = DEFAULT_FFT_BINS
 
     if num_bins != fft_bins:
         print(f"Warning: {filename} has {num_bins} bins, expected {fft_bins}. Adjusting to use min(num_bins, fft_bins).")
@@ -66,10 +62,9 @@ def create_and_store_lr(filepath, filename):
     for i in range(num_slices):
         for j in range(num_bands):
             start, end = edges[j], edges[j + 1]
-            if end > start:
-                lr_matrix[i, j] = np.mean(sliced_matrix[i, start:end])
-            else:
-                lr_matrix[i, j] = 0.0
+            if end <= start:
+                end = min(start + 1, pr_matrix.shape[1])
+            lr_matrix[i, j] = np.mean(sliced_matrix[i, start:end])
 
     output_path = os.path.join(output_directory, f"lr_{filename}.csv")
     os.makedirs(output_directory, exist_ok=True)
