@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: music-recommender
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      containers:
+        - name: music-recommender
+          image: music-recommender:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /music-categorizer-data
+              name: music-categorizer-pvc
+      volumes:
+        - name: music-categorizer-pvc
+          persistentVolumeClaim:
+            claimName: music-categorizer-pvc
+      restartPolicy: Never
