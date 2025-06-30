@@ -4,6 +4,8 @@ RUN_INIT=false
 RUN_PCM=false
 RUN_PR=false
 RUN_LR=false
+RUN_MR=false
+RUN_AF=false
 
 for arg in "$@"; do
   case $arg in
@@ -11,7 +13,9 @@ for arg in "$@"; do
     --pcm)  RUN_PCM=true ;;
     --pr)   RUN_PR=true ;;
     --lr)   RUN_LR=true ;;
-    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true;;
+    --mr)   RUN_MR=true ;;
+    --af)   RUN_AF=true ;;
+    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true;;
     *) echo "Unknown flag: $arg"; exit 1 ;;
   esac
 done
@@ -22,8 +26,6 @@ if $RUN_INIT; then
   kubectl apply -f PVC.yaml
   cd ..
 fi
-
-# ./start_airflow.sh
 
 if $RUN_PCM; then
   cd PCM-Encoder
@@ -48,3 +50,14 @@ if $RUN_LR; then
   cd ..
 fi
 
+if $RUN_MR; then
+  cd music-recommender
+  kubectl delete job music-recommender  
+  docker build -f Dockerfile -t music-recommender:latest .
+  kubectl apply -f k8s/deployment.yaml
+  cd ..
+fi
+
+if $RUN_AF; then
+  ./start_airflow.sh
+fi
