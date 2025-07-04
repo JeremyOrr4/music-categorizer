@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: debug-pod
+  namespace: airflow
 spec:
   containers:
     - name: debug
@@ -18,4 +19,4 @@ spec:
         claimName: music-categorizer-pvc
   restartPolicy: Never
 
-# kubectl exec -it debug-pod -- sh
+# kubectl exec -it debug-pod -n airflow -- sh
