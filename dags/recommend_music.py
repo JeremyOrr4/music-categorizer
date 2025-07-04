@@ -3,7 +3,6 @@ from airflow.utils.dates import days_ago
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from kubernetes.client import V1Volume, V1PersistentVolumeClaimVolumeSource, V1VolumeMount
 
-# DAG default args
 default_args = {
     "owner": "airflow",
     "depends_on_past": False,
