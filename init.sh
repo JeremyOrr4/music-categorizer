@@ -98,4 +98,8 @@ if $RUN_DOCKER; then
   docker build -f Dockerfile -t music-recommender:latest .
   cd ..
 
+  cd clean_pvc
+  docker build -f Dockerfile -t clean-pvc:latest .
+  cd ..
+
 fi
