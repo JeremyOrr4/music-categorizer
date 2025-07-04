@@ -3,11 +3,12 @@ kind: PersistentVolume
 metadata:
   name: music-categorizer-pv
 spec:
-  storageClassName: manual
   capacity:
     storage: 1Gi
   accessModes:
     - ReadWriteOnce
+  storageClassName: ""
+  persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: "/music-categorizer-data"
 ---
@@ -22,4 +23,5 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: manual
+  volumeName: music-categorizer-pv
+  storageClassName: ""
