@@ -2953,7 +2953,7 @@ dags:
     # git repo clone url
     # ssh example: git@github.com:apache/airflow.git
     # https example: https://github.com/apache/airflow.git
-    repo: https://github.com/JeremyOrr4/music_categorizer_dags
+    repo: https://github.com/JeremyOrr4/music-categorizer
     branch: main
     rev: HEAD
     # The git revision (branch, tag, or hash) to check out, v4 only
