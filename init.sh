@@ -70,17 +70,14 @@ if $RUN_DOCKER; then
   cd ..
 
   cd pr-generator
-  kubectl delete job pr-generator
   docker build -f Dockerfile -t pr-generator:latest .
   cd ..
 
   cd lr-generator
-  kubectl delete job lr-generator  
   docker build -f Dockerfile -t lr-generator:latest .
   cd ..
 
   cd music-recommender
-  kubectl delete job music-recommender  
   docker build -f Dockerfile -t music-recommender:latest .
   cd ..
 
