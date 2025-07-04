@@ -6,6 +6,7 @@ RUN_PR=false
 RUN_LR=false
 RUN_MR=false
 RUN_AF=false
+RUN_DOCKER=false
 
 for arg in "$@"; do
   case $arg in
@@ -15,7 +16,8 @@ for arg in "$@"; do
     --lr)   RUN_LR=true ;;
     --mr)   RUN_MR=true ;;
     --af)   RUN_AF=true ;;
-    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true;;
+    --docker)   RUN_DOCKER=true ;;
+    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true; RUN_DOCKER=true;;
     *) echo "Unknown flag: $arg"; exit 1 ;;
   esac
 done
@@ -59,4 +61,27 @@ fi
 
 if $RUN_AF; then
   ./start_airflow.sh
+fi
+
+
+if $RUN_DOCKER; then
+  cd PCM-Encoder
+  docker build -f Dockerfile -t pcm-encoder:latest .
+  cd ..
+
+  cd pr-generator
+  kubectl delete job pr-generator
+  docker build -f Dockerfile -t pr-generator:latest .
+  cd ..
+
+  cd lr-generator
+  kubectl delete job lr-generator  
+  docker build -f Dockerfile -t lr-generator:latest .
+  cd ..
+
+  cd music-recommender
+  kubectl delete job music-recommender  
+  docker build -f Dockerfile -t music-recommender:latest .
+  cd ..
+
 fi
