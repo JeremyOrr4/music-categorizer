@@ -56,6 +56,10 @@ echo -n "your_github_pat" | base64
 * Open `init_deploy/secret.yaml` and paste your base64-encoded values into the appropriate fields.
 * Open `init_deploy/values.yaml` and change the `repo:` field to point to your forked GitHub repository.
 
+b.
+* Open `init_deploy/values.yaml` and add the webserver key so you can see logs
+# Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
+webserverSecretKey:
 ---
 
 ### 4. Start Airflow
