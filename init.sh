@@ -22,7 +22,6 @@ done
 
 if $RUN_INIT; then
   cd init_deploy
-  kubectl apply -f PV.yaml
   kubectl apply -f PVC.yaml
   cd ..
 fi
