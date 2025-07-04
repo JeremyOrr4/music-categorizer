@@ -7,7 +7,7 @@ default_args = {
 }
 
 dag = DAG(
-    dag_id='hello_world_dag_V2',
+    dag_id='hello_world_dag_Update',
     default_args=default_args,
     schedule=None,
     catchup=False,
