@@ -60,7 +60,24 @@ if $RUN_MR; then
 fi
 
 if $RUN_AF; then
-  ./start_airflow.sh
+  kubectl create namespace airflow
+  helm uninstall airflow -n airflow
+
+  kubectl apply -f init_deploy/airflow_role/airflow-rbac.yaml
+  kubectl get sa airflow-worker -n default                   
+  kubectl get rolebinding airflow-pod-operator-binding -n default
+
+
+  # start
+  helm repo add apache-airflow https://airflow.apache.org
+  helm repo update
+
+  kubectl apply -f init_deploy/secret.yaml --namespace airflow
+  helm upgrade --install airflow apache-airflow/airflow -n airflow -f init_deploy/values.yaml --debug --timeout 10m02s
+  helm ls -n airflow 
+
+  # 2.9
+  # kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow
 fi
 
 
