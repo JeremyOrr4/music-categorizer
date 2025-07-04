@@ -91,3 +91,11 @@ Your DAGs should appear shortly after startup. Syncing from GitHub may take a fe
 ## DAGs
 
 **TO DO** – Describe the DAGs here once implemented.
+
+
+Debug
+
+Sometimes the pvc is weird. 
+kubectl patch pv music-categorizer-pv -p '{"spec":{"claimRef": null}}'
+^^ If u delete the pvc it may be still stuck to it when you create the new claim. This will unstick it
+./init.sh --init
