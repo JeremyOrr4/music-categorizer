@@ -86,4 +86,17 @@ with DAG(
         get_logs=True,
     )
 
-    pcm_encoder >> pr_generator >> lr_generator >> music_recommender
+    clean_pvc = KubernetesPodOperator(
+        task_id="clean_pvc",
+        name="clean-pvc",
+        namespace="airflow",
+        service_account_name="airflow-worker",
+        image="clean-pvc:latest",
+        image_pull_policy="IfNotPresent",
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True,
+        get_logs=True,
+    )
+
+    pcm_encoder >> pr_generator >> lr_generator >> music_recommender >> clean_pvc
