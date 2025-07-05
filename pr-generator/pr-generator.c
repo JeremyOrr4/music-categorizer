@@ -8,11 +8,11 @@
 #include <errno.h>
 
 #define N 1024          // FFT window size
-#define MAX_WINDOWS 10000  // Adjust as needed
+#define MAX_WINDOWS 15000  // Adjust as needed. Remove this is I want to have whole song sampled in ftw()
 
 int ends_with_raw(const char *filename) {
     size_t len = strlen(filename);
-    return len >= 4 && strcmp(filename + len - 4, ".raw") == 0;
+    return strcmp(filename + len - 4, ".raw") == 0;
 }
 
 void fourier_transform_windows(const char *filepath, const short *samples, int num_samples) {
@@ -33,8 +33,15 @@ void fourier_transform_windows(const char *filepath, const short *samples, int n
 
     for (int t = 0; t < num_windows; t++) {
         int offset = t * N;
+        double mean = 0.0;
+        for (int i = 0; i < N; i++) { // 1. DC Bias (Offset)
+            mean += samples[offset + i];
+        }
+        mean /= N;
+
         for (int i = 0; i < N; i++) {
-            in[i] = (double)samples[offset + i] / 32768.0;
+            double window = 0.5 * (1.0 - cos(2.0 * M_PI * i / (N - 1)));  // Hann
+            in[i] = ((double)(samples[offset + i] - mean) / 32768.0) * window;
         }
 
         fftw_execute(plan);
