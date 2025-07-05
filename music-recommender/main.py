@@ -7,13 +7,14 @@ from sklearn.metrics.pairwise import cosine_similarity
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import LeakyReLU
 
 LR_DIR = "/music-categorizer-data/lr-generator"
 MODEL_DIR = "/music-categorizer-data/model"
 AUTOENCODER_PATH = os.path.join(MODEL_DIR, "autoencoder.keras")
 EMBEDDINGS_PATH = os.path.join(MODEL_DIR, "song_embeddings.json")
 NUM_CLUSTERS = 10
-ENCODING_DIM = 10
+ENCODING_DIM = 20
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 
@@ -35,10 +36,15 @@ def load_song_vectors():
 
 def build_autoencoder(input_dim, encoding_dim):
     inp = Input(shape=(input_dim,))
-    encoded = Dense(32, activation='relu')(inp)
-    encoded = Dense(encoding_dim, activation='relu')(encoded)
-    decoded = Dense(32, activation='relu')(encoded)
-    out = Dense(input_dim, activation='linear')(decoded)
+    x = Dense(32)(inp)
+    x = LeakyReLU(alpha=0.1)(x)
+    x = Dense(encoding_dim)(x)
+    encoded = LeakyReLU(alpha=0.1)(x)
+
+    x = Dense(32)(encoded)
+    x = LeakyReLU(alpha=0.1)(x)
+    out = Dense(input_dim, activation='linear')(x)
+
     autoencoder = Model(inp, out)
     encoder = Model(inp, encoded)
     autoencoder.compile(optimizer=Adam(0.001), loss='mse')
