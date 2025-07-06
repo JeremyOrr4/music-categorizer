@@ -22,6 +22,7 @@ chmod +x init.sh
 Run the following command to set up persistent volume claims (PVCs) and build the Docker images:
 
 ```bash
+kubectl create namespace airflow
 ./init.sh --init --docker
 ```
 
@@ -93,9 +94,34 @@ Your DAGs should appear shortly after startup. Syncing from GitHub may take a fe
 **TO DO** – Describe the DAGs here once implemented.
 
 
-Debug
+## Debug
 
-Sometimes the pvc is weird. 
-kubectl patch pv music-categorizer-pv -p '{"spec":{"claimRef": null}}'
-^^ If u delete the pvc it may be still stuck to it when you create the new claim. This will unstick it
+If you have already installed Airflow, you may need to run this to remove the service account:
+
+```bash
+kubectl delete serviceaccount airflow-worker -n airflow
+```
+
+Sometimes the PVC is weird.  
+Delete all pods that use the PVC (if there even are any).
+
+```bash
+kubectl patch pv music-categorizer-pv -p '{"spec":{"claimRef": null}}' -n airflow
+kubectl patch pvc music-categorizer-pvc -p '{"metadata":{"finalizers":null}}' --type=merge -n airflow
+```
+
+Make sure to delete again with:
+
+```bash
+kubectl delete pvc music-categorizer-pvc -n airflow
+kubectl delete pv music-categorizer-pv -n airflow
+```
+
+> If you delete the PVC, it may still be stuck to the PV when you create the new claim.  
+> This will unstick it.
+
+Finally, re-run your init script:
+
+```bash
 ./init.sh --init
+```
