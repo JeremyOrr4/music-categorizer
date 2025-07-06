@@ -5,7 +5,7 @@ metadata:
   namespace: airflow
 spec:
   capacity:
-    storage: 100Gi
+    storage: 50Gi
   accessModes:
     - ReadWriteOnce
   storageClassName: ""
@@ -23,6 +23,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
-  volumeName: music-categorizer-pv
-  storageClassName: ""
+      storage: 50Gi
+  storageClassName: hostpath
