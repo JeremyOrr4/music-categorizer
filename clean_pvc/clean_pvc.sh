@@ -7,4 +7,4 @@ cd /music-categorizer-data
 
 rm -rf lr-generator pcm_encoder pr-generator audio
 
-echo "Cleanup complete: deleted lr-generator, pcm_encoder, pr-generator"
+echo "Cleanup complete: deleted lr-generator, pcm_encoder, pr-generator audio"
