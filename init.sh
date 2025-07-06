@@ -82,6 +82,10 @@ fi
 
 
 if $RUN_DOCKER; then
+  cd get_audio
+  docker build -f Dockerfile -t get-audio:latest .
+  cd ..
+
   cd PCM-Encoder
   docker build -f Dockerfile -t pcm-encoder:latest .
   cd ..
