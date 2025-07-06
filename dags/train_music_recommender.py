@@ -31,6 +31,18 @@ with DAG(
         mount_path="/music-categorizer-data",
     )
 
+    get_audio = KubernetesPodOperator(
+        task_id="get_audio",
+        name="get-audio",
+        namespace="airflow",
+        service_account_name="airflow-worker",
+        image="get-audio:latest",
+        image_pull_policy="IfNotPresent",
+        volumes=[volume],
+        volume_mounts=[volume_mount],
+        is_delete_operator_pod=True,
+        get_logs=True,
+    )
 
     pcm_encoder = KubernetesPodOperator(
         task_id="pcm_encoder",
@@ -99,4 +111,4 @@ with DAG(
         get_logs=True,
     )
 
-    pcm_encoder >> pr_generator >> lr_generator >> music_recommender >> clean_pvc
+    get_audio >> pcm_encoder >> pr_generator >> lr_generator >> music_recommender >> clean_pvc
