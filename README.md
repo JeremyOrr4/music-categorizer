@@ -96,11 +96,15 @@ Your DAGs should appear shortly after startup. Syncing from GitHub may take a fe
 
 ## Debug
 
+# Error is about service account when you start Airflow up
+
 If you have already installed Airflow, you may need to run this to remove the service account:
 
 ```bash
 kubectl delete serviceaccount airflow-worker -n airflow
 ```
+
+# Error with cannot delete pvc
 
 Sometimes the PVC is weird.  
 Delete all pods that use the PVC (if there even are any).
@@ -124,4 +128,24 @@ Finally, re-run your init script:
 
 ```bash
 ./init.sh --init
+```
+
+## Debugging Full Memory in Workflow
+
+If you get full memory when running the workflow and you know it will be more than **50 GB**, then check this file:
+
+```
+init_deploy/PVC.yaml
+```
+
+Go to this line:
+
+```yaml
+storageClassName: hostpath
+```
+
+Make sure the `hostpath` value matches what is returned from the following command:
+
+```sh
+kubectl get storageclass -o wide
 ```
