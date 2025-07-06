@@ -6,7 +6,7 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY download_playlist.sh /app/download_playlist.sh
-RUN chmod +x /app/download_playlist.sh
+COPY get_audio.sh.sh /app/get_audio.sh.sh
+RUN chmod +x /app/get_audio.sh.sh
 
 CMD ["/bin/bash", "/app/get_audio.sh"]
