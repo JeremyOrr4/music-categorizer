@@ -38,7 +38,7 @@ with DAG(
         image="music-recommender:latest",
         image_pull_policy="IfNotPresent",
         cmds=["python", "main.py"],
-        arguments=["--recommend", "New Person, Same Old Mistakes"],
+        arguments=["--recommend", "God_Only_Knows_Mono"],
         volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
