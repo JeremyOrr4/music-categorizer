@@ -9,6 +9,7 @@ A tool for organizing, recommending, and categorizing your music collection usin
 ### 1. Prerequisites
 
 * Ensure you have Docker installed and working, with Kubernetes enabled.
+* Ensure you have helm installed.
 * Make the setup script executable:
 
 ```bash
