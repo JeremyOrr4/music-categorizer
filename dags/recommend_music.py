@@ -12,10 +12,11 @@ default_args = {
 with DAG(
     dag_id="recommend_music",
     default_args=default_args,
-    description="Get recommend songs from database",
+    description="Get recommended songs from database",
     schedule_interval=None,
     start_date=days_ago(1),
     catchup=False,
+    params={"song_name": "God_Only_Knows_Mono"},
 ) as dag:
 
     volume = V1Volume(
@@ -38,7 +39,7 @@ with DAG(
         image="music-recommender:latest",
         image_pull_policy="IfNotPresent",
         cmds=["python", "main.py"],
-        arguments=["--recommend", "God_Only_Knows_Mono"],
+        arguments=["--recommend", "{{ params.song_name }}"],
         volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
