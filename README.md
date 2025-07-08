@@ -56,15 +56,27 @@ echo -n "your_github_pat" | base64
 3. **Edit the Airflow configuration files**
 
 * Open `init_deploy/secret.yaml` and paste your base64-encoded values into the appropriate fields.
-* Open `init_deploy/values.yaml` and change the `repo:` field to point to your forked GitHub repository.
+* Open `init_deploy/values.yaml` and change the `repo:` field to point to your forked/cloned GitHub repository. It could even be mine.
 
-b.
-* Open `init_deploy/values.yaml` and add the webserver key so you can see logs
-# Flask secret key for Airflow Webserver: `[webserver] secret_key` in airflow.cfg
-webserverSecretKey:
+b.  
+* Open `init_deploy/values.yaml` and add the webserver key so you can see logs  
+  This is the line you need to change:  
+  `# Flask secret key for Airflow Webserver: [webserver] secret_key in airflow.cfg`  
+  `webserverSecretKey: XXXXXXXXXXXX`  
+
+  Run this python code below (either python3 or python) and get the value and stick it in the XXXXXXXXX part for the webserverSecretKey:
+  ```bash
+  python -c "import secrets; print('webserverSecretKey:', secrets.token_hex(32))"
+
 ---
+In secret.yaml
+- You should now have your gitsync values filled
+In values.yaml
+- You should now have the webserverSecretKey filled
+- Also you should have the repo: https://........ filled
 
 ### 4. Start Airflow
+Make sure you double check you have all the values from previous steps. 
 
 ```bash
 ./init.sh --af
@@ -150,3 +162,25 @@ Make sure the `hostpath` value matches what is returned from the following comma
 ```sh
 kubectl get storageclass -o wide
 ```
+
+# Airflow Re-initialization and Service Account Issue
+
+If you are getting a problem re-initializing Airflow after uninstalling, or you receive an error from Helm regarding a service account, try this:
+
+```bash
+kubectl delete serviceaccount airflow-worker -n airflow
+```
+
+---
+
+# Airflow Redis Pod Not Terminating
+
+If your Airflow Redis pod is not terminating:
+
+- Open Docker Desktop
+- Go to **Containers**
+- Find and delete the container named **redis**
+
+# Something isnt working
+
+Unforuantly you neeed to understand kubernetes for a lot of debugging. Keep trying as it will help you learn and please report any errors you find to the github.
