@@ -62,6 +62,7 @@ fi
 if $RUN_AF; then
   # kubectl create namespace airflow
   # helm uninstall airflow -n airflow
+  # kubectl delete serviceaccount airflow-worker -n airflow
 
   # start
   helm repo add apache-airflow https://airflow.apache.org
