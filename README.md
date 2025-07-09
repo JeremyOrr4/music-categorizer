@@ -1,4 +1,4 @@
-# Music Categorizer V1
+# Music Categorizer V1.2
 
 A tool for organizing, recommending, and categorizing your music collection using Apache Airflow and Docker.
 
