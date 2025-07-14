@@ -24,7 +24,7 @@ def create_song(song: schemas.SongCreate, db: Session = Depends(get_db)):
     return db_song
 
 @app.get("/songs/", response_model=list[schemas.SongOut])
-def read_songs(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+def read_songs(skip: int = 0, limit: int = 100000, db: Session = Depends(get_db)):
     return db.query(models.Song).offset(skip).limit(limit).all()
 
 @app.get("/songs/{song_id}", response_model=schemas.SongOut)
@@ -34,25 +34,25 @@ def read_song(song_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Song not found")
     return song
 
-@app.put("/songs/{song_id}", response_model=schemas.SongOut)
-def update_song(song_id: int, song_update: schemas.SongCreate, db: Session = Depends(get_db)):
-    song = db.query(models.Song).filter(models.Song.id == song_id).first()
-    if song is None:
-        raise HTTPException(status_code=404, detail="Song not found")
+# @app.put("/songs/{song_id}", response_model=schemas.SongOut)
+# def update_song(song_id: int, song_update: schemas.SongCreate, db: Session = Depends(get_db)):
+#     song = db.query(models.Song).filter(models.Song.id == song_id).first()
+#     if song is None:
+#         raise HTTPException(status_code=404, detail="Song not found")
 
-    for key, value in song_update.dict().items():
-        setattr(song, key, value)
+#     for key, value in song_update.dict().items():
+#         setattr(song, key, value)
 
-    db.commit()
-    db.refresh(song)
-    return song
+#     db.commit()
+#     db.refresh(song)
+#     return song
 
-@app.delete("/songs/{song_id}")
-def delete_song(song_id: int, db: Session = Depends(get_db)):
-    song = db.query(models.Song).filter(models.Song.id == song_id).first()
-    if song is None:
-        raise HTTPException(status_code=404, detail="Song not found")
+# @app.delete("/songs/{song_id}")
+# def delete_song(song_id: int, db: Session = Depends(get_db)):
+#     song = db.query(models.Song).filter(models.Song.id == song_id).first()
+#     if song is None:
+#         raise HTTPException(status_code=404, detail="Song not found")
 
-    db.delete(song)
-    db.commit()
-    return {"message": "Song deleted successfully"}
+#     db.delete(song)
+#     db.commit()
+#     return {"message": "Song deleted successfully"}

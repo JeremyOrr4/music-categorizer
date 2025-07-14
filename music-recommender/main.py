@@ -2,6 +2,7 @@
 import os
 import numpy as np
 import json
+import requests
 from sklearn.cluster import KMeans
 from sklearn.metrics.pairwise import cosine_similarity
 from tensorflow.keras.models import Model
@@ -11,6 +12,9 @@ from tensorflow.keras.layers import LeakyReLU
 
 LR_DIR = "/music-categorizer-data/lr-generator"
 MODEL_DIR = "/music-categorizer-data/model"
+
+api_endpoint = "http://music-api.airflow:8000"
+
 AUTOENCODER_PATH = os.path.join(MODEL_DIR, "autoencoder.keras")
 EMBEDDINGS_PATH = os.path.join(MODEL_DIR, "song_embeddings.json")
 NUM_CLUSTERS = 10
@@ -70,25 +74,29 @@ def cluster_embeddings(encoder, song_data):
     model = KMeans(n_clusters=num_clusters, random_state=42)
     labels = model.fit_predict(embeddings)
 
-    db = []
     for i in range(len(ids)):
-        db.append({
-            "id": ids[i],
-            "embedding": embeddings[i].tolist(),
-            "cluster": int(labels[i])
-        })
+        payload = {
+        "title": ids[i],
+        "embedding": embeddings[i].tolist(),
+        "cluster": int(labels[i])
+        }
+        response = requests.post(api_endpoint + "/songs/", json=payload)
 
-    with open(EMBEDDINGS_PATH, "w") as f:
-        json.dump(db, f, indent=2)
-    print(f"[+] Saved clustered embeddings for {len(db)} songs.")
+        if response.status_code != 200:
+            print(f"Failed to POST song id {ids[i]}: {response.status_code} - {response.text}")
+
+    print(f"Saved clustered embeddings for {len(ids)} songs to database.")
 
 
 def recommend(song_id, top_k=5):
-    if not os.path.exists(EMBEDDINGS_PATH):
-        print("[-] No embeddings found. Run with --train first.")
+
+    response = requests.get(api_endpoint + "/songs/")
+    if response.status_code != 200:
+        print(f"Failed to fetch songs from API: {response.status_code} - {response.text}")
         return []
-    with open(EMBEDDINGS_PATH, "r") as f:
-        db = json.load(f)
+
+    db = response.json()
+
     target = next((s for s in db if s["id"] == song_id), None)
     if not target:
         print(f"[-] Song ID '{song_id}' not found.")
@@ -99,7 +107,11 @@ def recommend(song_id, top_k=5):
     if not same_cluster:
         return []
 
-    sims = cosine_similarity([target["embedding"]], [s["embedding"] for s in same_cluster])[0]
+    sims = cosine_similarity(
+        [target["embedding"]],
+        [s["embedding"] for s in same_cluster]
+    )[0]
+
     ranked = np.argsort(sims)[::-1][:top_k]
     return [(same_cluster[i]["id"], sims[i]) for i in ranked]
 

@@ -1,14 +1,10 @@
-from pydantic import BaseModel
-from typing import List, Optional
+from sqlalchemy import Column, Integer, String, JSON
 from src.database import Base
 
-class SongCreate(BaseModel):
-    title: str
-    embedding: List[float]
-    cluster: int
+class Song(Base):
+    __tablename__ = "songs"
 
-class SongOut(SongCreate):
-    id: int
-
-    class Config:
-        orm_mode = True
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    embedding = Column(JSON)
+    cluster = Column(Integer)

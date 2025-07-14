@@ -1,8 +1,10 @@
 from pydantic import BaseModel
+from typing import List
 
 class SongCreate(BaseModel):
     title: str
-    artist: str
+    embedding: List[float]
+    cluster: int
 
 class SongOut(SongCreate):
     id: int
