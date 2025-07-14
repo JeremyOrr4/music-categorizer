@@ -24,8 +24,12 @@ def create_song(song: schemas.SongCreate, db: Session = Depends(get_db)):
     return db_song
 
 @app.get("/songs/", response_model=list[schemas.SongOut])
-def read_songs(skip: int = 0, limit: int = 100000, db: Session = Depends(get_db)):
+def read_songs(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
     return db.query(models.Song).offset(skip).limit(limit).all()
+
+@app.get("/songs_all/", response_model=list[schemas.SongOut])
+def read_all_songs(db: Session = Depends(get_db)):
+    return db.query(models.Song).all()
 
 @app.get("/songs/{song_id}", response_model=schemas.SongOut)
 def read_song(song_id: int, db: Session = Depends(get_db)):
