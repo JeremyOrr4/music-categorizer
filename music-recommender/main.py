@@ -90,14 +90,12 @@ def cluster_embeddings(encoder, song_data):
 
 def recommend(song_id, top_k=5):
 
-    response = requests.get(api_endpoint + "/songs/")
+    response = requests.get(api_endpoint + "/songs_all/")
     if response.status_code != 200:
         print(f"Failed to fetch songs from API: {response.status_code} - {response.text}")
         return []
 
     db = response.json()
-
-    print(db)
 
     target = next((s for s in db if s["title"] == song_id), None)
     if not target:
