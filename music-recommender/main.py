@@ -97,13 +97,15 @@ def recommend(song_id, top_k=5):
 
     db = response.json()
 
-    target = next((s for s in db if s["id"] == song_id), None)
+    print(db)
+
+    target = next((s for s in db if s["title"] == song_id), None)
     if not target:
-        print(f"[-] Song ID '{song_id}' not found.")
+        print(f"[-] Song title '{song_id}' not found.")
         return []
 
     cluster = target["cluster"]
-    same_cluster = [s for s in db if s["cluster"] == cluster and s["id"] != song_id]
+    same_cluster = [s for s in db if s["cluster"] == cluster and s["title"] != song_id]
     if not same_cluster:
         return []
 
@@ -113,7 +115,7 @@ def recommend(song_id, top_k=5):
     )[0]
 
     ranked = np.argsort(sims)[::-1][:top_k]
-    return [(same_cluster[i]["id"], sims[i]) for i in ranked]
+    return [(same_cluster[i]["title"], sims[i]) for i in ranked]
 
 
 if __name__ == "__main__":

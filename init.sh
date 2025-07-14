@@ -99,6 +99,9 @@ if $RUN_API; then
 
   kubectl apply -f k8s/deployment.yaml
   kubectl apply -f k8s/service.yaml
+
+  # kubectl port-forward -n airflow svc/music-api 8000:8000
+  # http://localhost:8000/docs
   
   cd ..
 fi
