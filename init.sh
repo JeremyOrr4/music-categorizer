@@ -7,6 +7,7 @@ RUN_LR=false
 RUN_MR=false
 RUN_AF=false
 RUN_DOCKER=false
+RUN_API=false
 
 for arg in "$@"; do
   case $arg in
@@ -17,7 +18,8 @@ for arg in "$@"; do
     --mr)   RUN_MR=true ;;
     --af)   RUN_AF=true ;;
     --docker)   RUN_DOCKER=true ;;
-    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true; RUN_DOCKER=true;;
+    --api)   RUN_API=true ;;
+    --all)  RUN_INIT=true; RUN_PCM=true; RUN_PR=true; RUN_LR=true; RUN_MR=true; RUN_AF=true; RUN_DOCKER=true; RUN_API=true;;
     *) echo "Unknown flag: $arg"; exit 1 ;;
   esac
 done
@@ -85,6 +87,17 @@ if $RUN_AF; then
 
   # 2.9 See ui
   kubectl port-forward svc/airflow-webserver 8080:8080 --namespace airflow
+fi
+
+if $RUN_API; then
+  cd music-api
+
+  docker build -f Dockerfile -t music-api:latest .
+
+  kubectl apply -f k8s/deployment.yaml
+  kubectl apply -f k8s/service.yaml
+  
+  cd ..
 fi
 
 
