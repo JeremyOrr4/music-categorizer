@@ -90,6 +90,9 @@ if $RUN_AF; then
 fi
 
 if $RUN_API; then
+
+  kubectl delete pods -n airflow -l app=music-api
+
   cd music-api
 
   docker build -f Dockerfile -t music-api:latest .
