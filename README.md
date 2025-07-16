@@ -102,6 +102,12 @@ Your DAGs should appear shortly after startup. Syncing from GitHub may take a fe
 
 ---
 
+## Port forwarding
+api:
+```bash
+kubectl port-forward -n airflow svc/music-api 8000:8000
+```
+
 ## DAGs
 
 **TO DO** – Describe the DAGs here once implemented.
