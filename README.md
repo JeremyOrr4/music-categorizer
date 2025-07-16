@@ -107,6 +107,7 @@ api:
 ```bash
 kubectl port-forward -n airflow svc/music-api 8000:8000
 ```
+http://127.0.0.1:8000/docs
 
 ## DAGs
 
