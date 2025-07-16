@@ -10,13 +10,12 @@ default_args = {
 }
 
 with DAG(
-    dag_id="recommend_music",
+    dag_id="train_music_recommender",
     default_args=default_args,
-    description="Get recommended songs from database",
+    description="Run music processing pods in sequence",
     schedule_interval=None,
     start_date=days_ago(1),
     catchup=False,
-    params={"song_name": ""},
 ) as dag:
 
     volume = V1Volume(
@@ -39,7 +38,7 @@ with DAG(
         image="music-recommender:latest",
         image_pull_policy="IfNotPresent",
         cmds=["python", "main.py"],
-        arguments=["--recommend", "{{ params.song_name }}"],
+        arguments=["--train"],
         volumes=[volume],
         volume_mounts=[volume_mount],
         is_delete_operator_pod=True,
