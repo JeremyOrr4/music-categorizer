@@ -11,7 +11,7 @@ default_args = {
 }
 
 with DAG(
-    dag_id="train_music_recommender",
+    dag_id="mount_data",
     default_args=default_args,
     description="Run music processing pods in sequence",
     schedule_interval=None,  # Run on demand
