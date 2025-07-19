@@ -25,6 +25,7 @@ Run the following command to set up persistent volume claims (PVCs) and build th
 ```bash
 kubectl create namespace airflow
 ./init.sh --init --docker
+./init.sh --api
 ```
 
 ---
@@ -108,6 +109,12 @@ api:
 kubectl port-forward -n airflow svc/music-api 8000:8000
 ```
 http://127.0.0.1:8000/docs
+
+## Running your code
+Run the docker init script to update all your docker images.
+```bash
+./init.sh --docker
+```
 
 ## DAGs
 
